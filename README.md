@@ -1,58 +1,130 @@
-## Project: Build a Traffic Sign Recognition Program
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+# Traffic Sign Recognition
 
-Overview
 ---
-In this project, you will use what you've learned about deep neural networks and convolutional neural networks to classify traffic signs. You will train and validate a model so it can classify traffic sign images using the [German Traffic Sign Dataset](http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset). After the model is trained, you will then try out your model on images of German traffic signs that you find on the web.
 
-We have included an Ipython notebook that contains further instructions 
-and starter code. Be sure to download the [Ipython notebook](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb). 
+**Build a Traffic Sign Recognition Project**
 
-We also want you to create a detailed writeup of the project. Check out the [writeup template](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup. The writeup can be either a markdown file or a pdf document.
-
-To meet specifications, the project will require submitting three files: 
-* the Ipython notebook with the code
-* the code exported as an html file
-* a writeup report either as a markdown or pdf file 
-
-Creating a Great Writeup
----
-A great writeup should include the [rubric points](https://review.udacity.com/#!/rubrics/481/view) as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
-
-The Project
----
 The goals / steps of this project are the following:
-* Load the data set
+
+* Load the data set (using [German Traffic Sign Dataset](http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset))
 * Explore, summarize and visualize the data set
 * Design, train and test a model architecture
-* Use the model to make predictions on new images
+* Use the model to make predictions on new images randomly downloaded on the web
 * Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
 
-### Dependencies
-This lab requires:
 
-* [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit)
+[//]: # (Image References)
 
-The lab environment can be created with CarND Term1 Starter Kit. Click [here](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) for the details.
+[image1]: ./Y-Label.jpg
 
-### Dataset and Repository
 
-1. Download the data set. The classroom has a link to the data set in the "Project Instructions" content. This is a pickled dataset in which we've already resized the images to 32x32. It contains a training, validation and test set.
-2. Clone the project, which contains the Ipython notebook and the writeup template.
-```sh
-git clone https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project
-cd CarND-Traffic-Sign-Classifier-Project
-jupyter notebook Traffic_Sign_Classifier.ipynb
-```
+---
 
-### Requirements for Submission
-Follow the instructions in the `Traffic_Sign_Classifier.ipynb` notebook and write the project report using the writeup template as a guide, `writeup_template.md`. Submit the project code and writeup document.
+### Data Set Summary & Exploration
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+#### 1. Use `numpy.shape` to get the shape of the data set.
+
+#### 2. Use `pandas.value_counts()` to get the distribution of labels.
+
+Here is an exploratory visualization of the data set. It is a bar chart showing how the labels distribute in training, validation and test datasets.
+
+![alt text][image1]
+
+### Design and Test a Model Architecture
+
+#### 1. For normalization, I divided the images by 255 to scale the data between 0 and 1.
+
+#### 2. My model basically follows the structure of Lenet.
+
+My final model consisted of the following layers:
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x3 RGB image   							| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x6 	|
+| Relu					|												|
+| Max pooling 2x2	    | 2x2 stride, outputs 14x14x6   				|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x16	|
+| Relu                  |                                               |
+| Max pooling 2x2		| 2x2 stride, outputs 5x5x16     				|
+| Fully connected		| outputs 120 hidden nodes						|
+| Fully connected		| outputs 84 hidden nodes						|
+| Fully connected       | outputs 43 logits                             |
+| Softmax               | outputs 43 probabilities                      |
+
+
+#### 3. Training
+
+To train the model, I choose the `Adam` as my first choice, which combines the advantages of `RMSprop` and `Momentum`, and the hyperparameters I used are shown below:
+
+| Hyperparameter | Value  |
+|:--------------:|:------:|
+| Batch Size     |128     |
+| EPOCHS         |10      |
+| Learning Rate  |0.01    |
+
+#### 4. Discussion
+
+My final model results were:
+
+* the training set accuracy of 1, apparently, it is overfitting.
+* the validation set accuracy of 0.952
+* the test set accuracy of 0.903
+
+As the model shown above, I chose Lenet as my CNN architecture and luckily the training results of my first architectural selection met the accuracy requirements. 
+
+The results showed that Lenet is very powerful in image classification. Also, there are some other tricks I used to improve the model like a small learning rate and a `xavier_initializer()` which can make the gradients contour more round.
+
+There are some other ways I think would help improve the model's performance.
+
+* Turn images into gray scale
+* Augment the training data by rotating or shifting images or by changing colors
+* Use dropout layer instead of max pooling layer
+* Add batchnorm layer
+
+
+### Test a Model on New Images
+
+#### 1. New German traffic signs
+
+Here are seven German traffic signs that I found on the web:
+
+<img src="./new_images/bicycles-crossing.jpg" width = "200" height = "200"/>
+<img src="./new_images/bumpy-road.jpg" width = "200" height = "200"/>
+<img src="./new_images/roadworks.jpg" width = "200" height = "200"/>
+<img src="./new_images/slippery-road.jpg" width = "200" height = "200"/>
+<img src="./new_images/speed-limit-70.jpg" width = "200" height = "200"/>
+<img src="./new_images/stop.jpg" width = "200" height = "200"/>
+<img src="./new_images/wild-animals-crossing.jpg" width = "200" height = "200"/>
+
+The 1st, 2nd, 4th, 7th images contain watermarks, which may cause the model to fail.
+
+#### 2. Prediction and probabilities on each new images
+
+Here are the results of the prediction:
+
+| Image			        |     Prediction	     | Probability |
+|:---------------------:|:-----------------------:|:----------------------:| 
+| Bicycles Crossing  		| Stop   				| 0.999 |
+| Bumpy Road     			| Stop 					| 0.863 |
+| Roadworks					| Roadworks			    | 1 |
+| Slippery Road	      		| Speed limit 120km/h	| 0.778 |
+| Speed Limit 70km/h		| Speed Limit 70km/h	| 0.999 |
+| Stop                      | Stop                  | 0.999 |
+| Wild Animals Crossing     | Slippery road         | 0.999 |
+
+The model gives an accuracy of 42.8%, which is much lower than it performed on the test set.
+And even for the misclassified images, it gives a very high certainty.
+
+#### 3. Discussion on misclassified new images
+
+We can see that the results above are very interesting. 
+And there is a commonality for the misclassified pictures, that is, they all have watermarks.
+For the human eye, we can easily ignore the impact of the watermark. But for CNNs, this seems to be fatal, like a specific attack.
+
+For this problem, I think there may be two solutions:
+
+* Add watermarked images to the training set, it should be the most effective way.
+* Use Gaussian blur to fade the watermarks.
+
 
